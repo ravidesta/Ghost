@@ -50,6 +50,18 @@ export type {DropdownMenuCheckboxItemProps as DropdownMenuCheckboxItemProps} fro
 
 export {IconComponents as Icon} from './components/ui/icon';
 
+// Feature components
+export {GaramondReader} from './components/features/garamond-reader/garamond-reader';
+export type {
+    GaramondReaderProps,
+    ReaderDensity,
+    ReaderFontSize,
+    ReaderMode,
+    ReaderPalette
+} from './components/features/garamond-reader/garamond-reader';
+export {FONT_PAIRINGS, getPairing} from './components/features/garamond-reader/font-pairings';
+export type {FontPairing, FontPairingGroup} from './components/features/garamond-reader/font-pairings';
+
 // Visual assets
 export {ReactComponent as FacebookLogo} from './assets/images/facebook-logo.svg';
 export {ReactComponent as GhostLogo} from './assets/images/ghost-logo.svg';
