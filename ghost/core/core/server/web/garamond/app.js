@@ -16,9 +16,11 @@ const express = require('../../../shared/express');
 const errorHandler = require('@tryghost/mw-error-handler');
 const sentry = require('../../../shared/sentry');
 const shared = require('../shared');
+const membersService = require('../../services/members');
 
 const stripeWebhook = require('./webhooks/stripe');
 const paypalWebhook = require('./webhooks/paypal');
+const memberDownload = require('./routes/download');
 
 /**
  * @returns {import('express').Application}
@@ -43,8 +45,17 @@ module.exports = function setupGaramondApp() {
         paypalWebhook
     );
 
+    // Member-facing gated download — requires an authenticated member session
+    app.get(
+        '/books/:id/download',
+        membersService.middleware.loadMemberSession,
+        memberDownload
+    );
+
     app.use('/webhooks', errorHandler.resourceNotFound);
     app.use('/webhooks', errorHandler.handleJSONResponse(sentry));
+    app.use('/books', errorHandler.resourceNotFound);
+    app.use('/books', errorHandler.handleJSONResponse(sentry));
 
     debug('Garamond app setup end');
     return app;
