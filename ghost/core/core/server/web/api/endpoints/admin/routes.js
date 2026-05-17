@@ -401,6 +401,9 @@ module.exports = function apiRoutes() {
     router.put('/books/:bookId/chapters/:id', mw.authAdminApi, http(api.bookChapters.edit));
     router.delete('/books/:bookId/chapters/:id', mw.authAdminApi, http(api.bookChapters.destroy));
 
+    // ## Garamond — static author sites
+    router.post('/sites/publish', mw.authAdminApi, http(api.garamondSites.publish));
+
     // ## Custom theme settings
     router.get('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.browse));
     router.put('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.edit));

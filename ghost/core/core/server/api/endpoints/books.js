@@ -1,7 +1,7 @@
 const errors = require('@tryghost/errors');
 const tpl = require('@tryghost/tpl');
 const models = require('../../models');
-const {storefront, packager, ai} = require('../../services/garamond');
+const {storefront, packager, ai, sites} = require('../../services/garamond');
 
 const messages = {
     bookNotFound: 'Book not found.',

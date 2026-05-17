@@ -197,6 +197,10 @@ module.exports = {
         return apiFramework.pipeline(require('./book-chapters'), localUtils);
     },
 
+    get garamondSites() {
+        return apiFramework.pipeline(require('./garamond-sites'), localUtils);
+    },
+
     get stats() {
         return apiFramework.pipeline(require('./stats'), localUtils);
     },

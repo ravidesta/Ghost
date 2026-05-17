@@ -143,6 +143,39 @@ class AzureBlobStorage extends StorageBase {
         return this._publicUrl(blobName);
     }
 
+    /**
+     * Upload a buffer directly, matching the LocalStorageBase API. Used by
+     * the static site publisher and any other generator that already has
+     * bytes in memory.
+     *
+     * @param {Buffer|string} buffer
+     * @param {string} targetPath  path under the configured prefix (e.g. "authors/jane/index.html")
+     * @param {Object} [options]
+     * @param {string} [options.contentType]
+     * @param {string} [options.cacheControl]
+     * @returns {Promise<string>} the public URL the blob is served at
+     */
+    async saveRaw(buffer, targetPath, options = {}) {
+        if (!targetPath) {
+            throw new errors.BadRequestError({message: 'targetPath is required'});
+        }
+        const blobName = this._blobName('', targetPath);
+        const blob = this._getContainerClient().getBlockBlobClient(blobName);
+
+        try {
+            await blob.uploadData(Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer), {
+                blobHTTPHeaders: {
+                    blobContentType: options.contentType,
+                    blobCacheControl: options.cacheControl || 'public, max-age=300'
+                }
+            });
+        } catch (err) {
+            throw new errors.InternalServerError({err, message: tpl(messages.uploadFailed)});
+        }
+
+        return this._publicUrl(blobName);
+    }
+
     serve() {
         // Blobs are served directly from Azure (or the configured CDN);
         // Ghost only needs a pass-through middleware here.

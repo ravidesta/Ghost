@@ -10,6 +10,7 @@ const packager = require('./packager');
 const payments = require('./payments');
 const royalties = require('./royalties');
 const ai = require('./ai');
+const sites = require('./sites');
 
 module.exports = {
     fontPairings,
@@ -18,5 +19,6 @@ module.exports = {
     packager,
     payments,
     royalties,
-    ai
+    ai,
+    sites
 };
