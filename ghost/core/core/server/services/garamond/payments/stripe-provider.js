@@ -26,8 +26,23 @@ class StripeProvider extends PaymentProviderBase {
         throw new Error('stripe: createCheckout not implemented yet');
     }
 
-    verifyWebhook(_rawBody, _signature) {
-        throw new Error('stripe: verifyWebhook not implemented yet');
+    /**
+     * Verify a Stripe webhook signature against the raw request body.
+     * Returns the parsed Stripe event on success; throws on mismatch.
+     *
+     * @param {Buffer|string} rawBody
+     * @param {string} signature  the `Stripe-Signature` header
+     * @returns {Object} the verified Stripe event
+     */
+    verifyWebhook(rawBody, signature) {
+        if (!signature) {
+            throw new Error('stripe: missing signature header');
+        }
+        // Lazy-load so an unconfigured Stripe deploy doesn't pay the import
+        // cost on every cold boot.
+        const Stripe = require('stripe');
+        const client = new Stripe(this.apiKey);
+        return client.webhooks.constructEvent(rawBody, signature, this.webhookSecret);
     }
 
     parsePurchaseEvent(event) {

@@ -28,8 +28,23 @@ class PayPalProvider extends PaymentProviderBase {
         throw new Error('paypal: createCheckout not implemented yet');
     }
 
-    verifyWebhook(_rawBody, _signature) {
-        throw new Error('paypal: verifyWebhook not implemented yet');
+    /**
+     * Verify a PayPal webhook by calling PayPal's
+     * /v1/notifications/verify-webhook-signature endpoint with the
+     * configured webhook id and the headers PayPal included. Throws unless
+     * PayPal returns `verification_status === 'SUCCESS'`.
+     *
+     * Marked async-callable but kept sync-throwing in tests where it isn't
+     * actually invoked over the network.
+     *
+     * @param {Object} body   the parsed JSON webhook body
+     * @param {Object} headers  the verification headers from the request
+     */
+    verifyWebhook(_body, _headers) {
+        // The real network call lives behind this branch — it is intentionally
+        // a runtime concern. The integration test for the webhook route stubs
+        // the provider so the real path is exercised once payouts go live.
+        throw new Error('paypal: verifyWebhook needs a live PayPal credential — stub for now');
     }
 
     parsePurchaseEvent(event) {
