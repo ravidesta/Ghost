@@ -18,9 +18,10 @@ module.exports = async function handlePaypalWebhook(req, res, next) {
         }
 
         try {
-            // PayPal verification reads several headers + the raw body; the
-            // provider knows the shape and throws on mismatch.
-            provider.verifyWebhook(req.body, {
+            // PayPal verification reads several headers + the parsed body;
+            // the provider talks to PayPal's verify-webhook-signature
+            // endpoint and throws on mismatch.
+            await provider.verifyWebhook(req.body, {
                 authAlgo: req.headers['paypal-auth-algo'],
                 certUrl: req.headers['paypal-cert-url'],
                 transmissionId: req.headers['paypal-transmission-id'],

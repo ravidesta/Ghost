@@ -22,8 +22,65 @@ class StripeProvider extends PaymentProviderBase {
         return Boolean(this.apiKey && this.webhookSecret);
     }
 
-    async createCheckout(_args) {
-        throw new Error('stripe: createCheckout not implemented yet');
+    _getClient() {
+        if (!this._client) {
+            const Stripe = require('stripe');
+            this._client = new Stripe(this.apiKey);
+        }
+        return this._client;
+    }
+
+    /**
+     * Open a Stripe Checkout Session in payment mode for a one-off book sale.
+     * The session's metadata carries the member + book ids so the webhook
+     * can route the captured payment back to the right buyer and product.
+     *
+     * @param {Object} args
+     * @param {Object} args.book        plain book row (id, title, price_cents, currency)
+     * @param {Object} args.member      plain member row (id, email)
+     * @param {string} args.returnUrl
+     * @param {string} args.cancelUrl
+     * @returns {Promise<{redirectUrl: string, providerSessionId: string}>}
+     */
+    async createCheckout({book, member, returnUrl, cancelUrl}) {
+        if (!book || !book.id || !book.price_cents) {
+            throw new Error('stripe: book with id and price_cents is required');
+        }
+        if (!member || !member.id) {
+            throw new Error('stripe: member with id is required');
+        }
+        if (!returnUrl || !cancelUrl) {
+            throw new Error('stripe: returnUrl and cancelUrl are required');
+        }
+
+        const client = this._getClient();
+        const session = await client.checkout.sessions.create({
+            mode: 'payment',
+            payment_method_types: ['card'],
+            line_items: [{
+                quantity: 1,
+                price_data: {
+                    currency: book.currency || 'usd',
+                    unit_amount: book.price_cents,
+                    product_data: {
+                        name: book.title,
+                        description: book.subtitle || undefined
+                    }
+                }
+            }],
+            customer_email: member.email,
+            metadata: {
+                memberId: member.id,
+                bookId: book.id
+            },
+            success_url: returnUrl,
+            cancel_url: cancelUrl
+        });
+
+        return {
+            redirectUrl: session.url,
+            providerSessionId: session.id
+        };
     }
 
     /**

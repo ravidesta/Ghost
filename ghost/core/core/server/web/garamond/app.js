@@ -21,6 +21,7 @@ const membersService = require('../../services/members');
 const stripeWebhook = require('./webhooks/stripe');
 const paypalWebhook = require('./webhooks/paypal');
 const memberDownload = require('./routes/download');
+const startCheckout = require('./routes/checkout');
 
 /**
  * @returns {import('express').Application}
@@ -50,6 +51,14 @@ module.exports = function setupGaramondApp() {
         '/books/:id/download',
         membersService.middleware.loadMemberSession,
         memberDownload
+    );
+
+    // Start a checkout for a paid book
+    app.post(
+        '/books/:id/checkout',
+        bodyParser.json({limit: '1mb'}),
+        membersService.middleware.loadMemberSession,
+        startCheckout
     );
 
     app.use('/webhooks', errorHandler.resourceNotFound);
