@@ -409,6 +409,11 @@ module.exports = function apiRoutes() {
     router.get('/payouts/balance', mw.authAdminApi, http(api.garamondPayouts.balance));
     router.post('/payouts/pay', mw.authAdminApi, http(api.garamondPayouts.pay));
 
+    // ## Garamond — author concierge
+    router.post('/concierge/chat', mw.authAdminApi, http(api.garamondConcierge.chat));
+    router.get('/concierge/memory', mw.authAdminApi, http(api.garamondConcierge.memory));
+    router.put('/concierge/memory', mw.authAdminApi, http(api.garamondConcierge.setMemory));
+
     // ## Custom theme settings
     router.get('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.browse));
     router.put('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.edit));

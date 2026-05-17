@@ -25,6 +25,7 @@ describe('Exporter', function () {
             const tables = [
                 'actions',
                 'api_keys',
+                'author_memory',
                 'automated_email_recipients',
                 'benefits',
                 'book_chapters',
@@ -36,6 +37,7 @@ describe('Exporter', function () {
                 'comments',
                 'comment_likes',
                 'comment_reports',
+                'concierge_messages',
                 'custom_theme_settings',
                 'donation_payment_events',
                 'email_batches',

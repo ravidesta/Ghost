@@ -1348,5 +1348,30 @@ module.exports = {
             ['book_id'],
             ['book_purchase_id']
         ]
+    },
+    author_memory: {
+        id: {type: 'string', maxlength: 24, nullable: false, primary: true},
+        author_id: {type: 'string', maxlength: 24, nullable: false, references: 'users.id'},
+        key: {type: 'string', maxlength: 191, nullable: false},
+        value: {type: 'text', maxlength: 65535, nullable: true},
+        source: {type: 'string', maxlength: 50, nullable: false, defaultTo: 'user', validations: {isIn: [['user', 'inferred', 'event']]}},
+        confidence: {type: 'integer', nullable: false, unsigned: true, defaultTo: 100},
+        created_at: {type: 'dateTime', nullable: false},
+        updated_at: {type: 'dateTime', nullable: true},
+        '@@INDEXES@@': [
+            ['author_id', 'key']
+        ]
+    },
+    concierge_messages: {
+        id: {type: 'string', maxlength: 24, nullable: false, primary: true},
+        author_id: {type: 'string', maxlength: 24, nullable: false, references: 'users.id'},
+        role: {type: 'string', maxlength: 50, nullable: false, validations: {isIn: [['user', 'assistant', 'system']]}},
+        content: {type: 'text', maxlength: 1000000000, fieldtype: 'long', nullable: false},
+        token_usage: {type: 'text', maxlength: 65535, nullable: true},
+        model: {type: 'string', maxlength: 100, nullable: true},
+        created_at: {type: 'dateTime', nullable: false},
+        '@@INDEXES@@': [
+            ['author_id', 'created_at']
+        ]
     }
 };

@@ -91,7 +91,9 @@ const TABLES_ALLOWLIST = [
     'books',
     'book_chapters',
     'book_purchases',
-    'royalty_ledger'
+    'royalty_ledger',
+    'author_memory',
+    'concierge_messages'
 ];
 
 // NOTE: these are settings keys which should never end up in the export file
