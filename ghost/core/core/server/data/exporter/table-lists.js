@@ -89,7 +89,8 @@ const TABLES_ALLOWLIST = [
     'snippets',
     'series',
     'books',
-    'book_chapters'
+    'book_chapters',
+    'book_purchases'
 ];
 
 // NOTE: these are settings keys which should never end up in the export file

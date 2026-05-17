@@ -5,8 +5,12 @@
 // font pairing presets — the rest lands as it's built.
 const fontPairings = require('./font-pairings');
 const importer = require('./importer');
+const storefront = require('./storefront');
+const packager = require('./packager');
 
 module.exports = {
     fontPairings,
-    importer
+    importer,
+    storefront,
+    packager
 };
