@@ -7,14 +7,21 @@
 const config = require('../../../../shared/config');
 const ai = require('../../ai');
 
-const TEXT_TASK_DEFAULTS = ['anthropic', 'openai', 'azure'];
+const TEXT_TASK_DEFAULTS = ['anthropic', 'mistral', 'openai', 'azure'];
 const IMAGE_TASK_DEFAULTS = ['openai', 'azure'];
+
+// Multilingual text tasks prefer Mistral first — it is the strongest
+// option for non-English European languages today, and the rest of the
+// fleet sit behind it. Code that needs reliable English-only output
+// should use `text` defaults instead.
+const MULTILINGUAL_TEXT_DEFAULTS = ['mistral', 'anthropic', 'openai', 'azure'];
 
 const KNOWN_TASKS = {
     copyedit:        {kind: 'text'},
     summary:         {kind: 'text'},
     marketingCopy:   {kind: 'text'},
     seriesAnalysis:  {kind: 'text'},
+    siteCopy:        {kind: 'text', defaults: MULTILINGUAL_TEXT_DEFAULTS},
     coverImage:      {kind: 'image'},
     seriesCovers:    {kind: 'image'},
     watercolorAccent:{kind: 'image'}
@@ -68,7 +75,8 @@ function resolveProvider(taskName) {
         }
     }
 
-    const defaults = task.kind === 'image' ? IMAGE_TASK_DEFAULTS : TEXT_TASK_DEFAULTS;
+    const defaults = task.defaults
+        || (task.kind === 'image' ? IMAGE_TASK_DEFAULTS : TEXT_TASK_DEFAULTS);
     return {provider: _pickFirstAvailable(defaults, task.kind), kind: task.kind};
 }
 

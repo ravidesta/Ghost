@@ -403,6 +403,7 @@ module.exports = function apiRoutes() {
 
     // ## Garamond — static author sites
     router.post('/sites/publish', mw.authAdminApi, http(api.garamondSites.publish));
+    router.post('/sites/copy', mw.authAdminApi, http(api.garamondSites.copy));
 
     // ## Custom theme settings
     router.get('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.browse));

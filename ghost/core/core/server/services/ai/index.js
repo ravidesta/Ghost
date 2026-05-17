@@ -2,26 +2,30 @@
 //
 // Multi-provider factory — callers pick a provider explicitly (most code
 // goes through the Garamond task router which knows which provider best
-// serves each task). Available providers: openai, anthropic, azure, noop.
+// serves each task). Available providers: openai, anthropic, mistral,
+// azure, noop.
 //
 // Config shape:
 //   ai:
 //     providers:
-//       enabled: ['openai', 'anthropic']
+//       enabled: ['openai', 'anthropic', 'mistral']
 //       openai:    {apiKey, defaultTextModel, defaultImageModel}
 //       anthropic: {apiKey, defaultTextModel, copyeditModel}
+//       mistral:   {apiKey, defaultTextModel, copywritingModel}
 //       azure:     {endpoint, apiKey, apiVersion, deployments: {text, image}}
 const config = require('../../../shared/config');
 
 const AIProviderBase = require('./AIProviderBase');
 const OpenAIProvider = require('./OpenAIProvider');
 const AnthropicProvider = require('./AnthropicProvider');
+const MistralProvider = require('./MistralProvider');
 const AzureAIProvider = require('./AzureAIProvider');
 const NoopAIProvider = require('./NoopAIProvider');
 
 const PROVIDERS = {
     openai: OpenAIProvider,
     anthropic: AnthropicProvider,
+    mistral: MistralProvider,
     azure: AzureAIProvider,
     noop: NoopAIProvider
 };
