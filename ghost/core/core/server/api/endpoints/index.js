@@ -185,6 +185,18 @@ module.exports = {
         return apiFramework.pipeline(require('./snippets'), localUtils);
     },
 
+    get books() {
+        return apiFramework.pipeline(require('./books'), localUtils);
+    },
+
+    get series() {
+        return apiFramework.pipeline(require('./series'), localUtils);
+    },
+
+    get bookChapters() {
+        return apiFramework.pipeline(require('./book-chapters'), localUtils);
+    },
+
     get stats() {
         return apiFramework.pipeline(require('./stats'), localUtils);
     },

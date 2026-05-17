@@ -376,6 +376,29 @@ module.exports = function apiRoutes() {
     router.put('/snippets/:id', mw.authAdminApi, http(api.snippets.edit));
     router.delete('/snippets/:id', mw.authAdminApi, http(api.snippets.destroy));
 
+    // ## Garamond — books
+    router.get('/books', mw.authAdminApi, http(api.books.browse));
+    router.get('/books/:id', mw.authAdminApi, http(api.books.read));
+    router.post('/books', mw.authAdminApi, http(api.books.add));
+    router.put('/books/:id', mw.authAdminApi, http(api.books.edit));
+    router.delete('/books/:id', mw.authAdminApi, http(api.books.destroy));
+    router.post('/books/import', mw.authAdminApi, http(api.books.import));
+    router.get('/books/:id/download', mw.authAdminApi, http(api.books.download));
+    router.get('/books/:id/access', mw.authAdminApi, http(api.books.access));
+
+    // ## Garamond — series
+    router.get('/series', mw.authAdminApi, http(api.series.browse));
+    router.get('/series/:id', mw.authAdminApi, http(api.series.read));
+    router.post('/series', mw.authAdminApi, http(api.series.add));
+    router.put('/series/:id', mw.authAdminApi, http(api.series.edit));
+    router.delete('/series/:id', mw.authAdminApi, http(api.series.destroy));
+
+    // ## Garamond — book chapters
+    router.get('/books/:bookId/chapters', mw.authAdminApi, http(api.bookChapters.browse));
+    router.post('/books/:bookId/chapters', mw.authAdminApi, http(api.bookChapters.add));
+    router.put('/books/:bookId/chapters/:id', mw.authAdminApi, http(api.bookChapters.edit));
+    router.delete('/books/:bookId/chapters/:id', mw.authAdminApi, http(api.bookChapters.destroy));
+
     // ## Custom theme settings
     router.get('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.browse));
     router.put('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.edit));
