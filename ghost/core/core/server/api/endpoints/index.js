@@ -201,6 +201,10 @@ module.exports = {
         return apiFramework.pipeline(require('./garamond-sites'), localUtils);
     },
 
+    get garamondPayouts() {
+        return apiFramework.pipeline(require('./garamond-payouts'), localUtils);
+    },
+
     get stats() {
         return apiFramework.pipeline(require('./stats'), localUtils);
     },

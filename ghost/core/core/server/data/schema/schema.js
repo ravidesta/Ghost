@@ -183,6 +183,9 @@ module.exports = {
         milestone_notifications: {type: 'boolean', nullable: false, defaultTo: true},
         donation_notifications: {type: 'boolean', nullable: false, defaultTo: true},
         gift_subscription_purchase_notification: {type: 'boolean', nullable: false, defaultTo: true},
+        stripe_connect_account_id: {type: 'string', maxlength: 100, nullable: true},
+        paypal_payer_email: {type: 'string', maxlength: 191, nullable: true},
+        default_payout_provider: {type: 'string', maxlength: 50, nullable: true},
         created_at: {type: 'dateTime', nullable: false},
         updated_at: {type: 'dateTime', nullable: true}
     },

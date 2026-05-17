@@ -102,6 +102,40 @@ class StripeProvider extends PaymentProviderBase {
         return client.webhooks.constructEvent(rawBody, signature, this.webhookSecret);
     }
 
+    /**
+     * Transfer funds from the platform's Stripe balance to an author's
+     * connected account. Authors must have completed Stripe Connect
+     * onboarding so `stripeConnectAccountId` is a valid `acct_...` id.
+     *
+     * @param {Object} args
+     * @param {string} args.stripeConnectAccountId  the author's connected account
+     * @param {number} args.amountCents             amount in the smallest currency unit
+     * @param {string} [args.currency='usd']
+     * @param {string} [args.description]
+     * @param {Object} [args.metadata]              passed straight through to Stripe
+     * @returns {Promise<{providerTransferId: string, status: string}>}
+     */
+    async sendPayout({stripeConnectAccountId, amountCents, currency = 'usd', description, metadata}) {
+        if (!stripeConnectAccountId) {
+            throw new Error('stripe: stripeConnectAccountId is required');
+        }
+        if (!Number.isFinite(amountCents) || amountCents <= 0) {
+            throw new Error('stripe: amountCents must be a positive number');
+        }
+        const client = this._getClient();
+        const transfer = await client.transfers.create({
+            amount: Math.round(amountCents),
+            currency,
+            destination: stripeConnectAccountId,
+            description,
+            metadata
+        });
+        return {
+            providerTransferId: transfer.id,
+            status: 'paid'
+        };
+    }
+
     parsePurchaseEvent(event) {
         if (!event || event.type !== 'checkout.session.completed') {
             return null;

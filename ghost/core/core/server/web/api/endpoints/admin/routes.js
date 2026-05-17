@@ -405,6 +405,10 @@ module.exports = function apiRoutes() {
     router.post('/sites/publish', mw.authAdminApi, http(api.garamondSites.publish));
     router.post('/sites/copy', mw.authAdminApi, http(api.garamondSites.copy));
 
+    // ## Garamond — author payouts
+    router.get('/payouts/balance', mw.authAdminApi, http(api.garamondPayouts.balance));
+    router.post('/payouts/pay', mw.authAdminApi, http(api.garamondPayouts.pay));
+
     // ## Custom theme settings
     router.get('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.browse));
     router.put('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.edit));

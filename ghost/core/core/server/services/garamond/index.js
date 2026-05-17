@@ -11,6 +11,7 @@ const payments = require('./payments');
 const royalties = require('./royalties');
 const ai = require('./ai');
 const sites = require('./sites');
+const payouts = require('./payouts');
 
 module.exports = {
     fontPairings,
@@ -20,5 +21,6 @@ module.exports = {
     payments,
     royalties,
     ai,
-    sites
+    sites,
+    payouts
 };

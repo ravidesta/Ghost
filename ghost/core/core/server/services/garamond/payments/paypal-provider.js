@@ -167,6 +167,64 @@ class PayPalProvider extends PaymentProviderBase {
         return true;
     }
 
+    /**
+     * Send a payout via PayPal Payouts. The author must have a PayPal
+     * account at `paypalPayerEmail`; PayPal automatically creates a
+     * pending payout if the email doesn't yet have a PayPal account.
+     *
+     * @param {Object} args
+     * @param {string} args.paypalPayerEmail
+     * @param {number} args.amountCents
+     * @param {string} [args.currency='usd']
+     * @param {string} [args.note]
+     * @returns {Promise<{providerTransferId: string, status: string}>}
+     */
+    async sendPayout({paypalPayerEmail, amountCents, currency = 'usd', note}) {
+        if (!paypalPayerEmail) {
+            throw new Error('paypal: paypalPayerEmail is required');
+        }
+        if (!Number.isFinite(amountCents) || amountCents <= 0) {
+            throw new Error('paypal: amountCents must be a positive number');
+        }
+
+        const token = await this._accessToken();
+        const value = (amountCents / 100).toFixed(2);
+        const batchId = `garamond-payout-${Date.now()}`;
+
+        const body = {
+            sender_batch_header: {
+                sender_batch_id: batchId,
+                email_subject: 'You have a payout from Garamond',
+                email_message: note || 'Your royalties from Garamond have been paid out.'
+            },
+            items: [{
+                recipient_type: 'EMAIL',
+                amount: {value, currency: currency.toUpperCase()},
+                receiver: paypalPayerEmail,
+                note: note || 'Royalty payout'
+            }]
+        };
+
+        const response = await fetch(`${this._apiBase()}/v1/payments/payouts`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`paypal: payout failed (${response.status}): ${text}`);
+        }
+        const json = await response.json();
+        return {
+            providerTransferId: json.batch_header?.payout_batch_id,
+            status: 'paid'
+        };
+    }
+
     parsePurchaseEvent(event) {
         if (!event || event.event_type !== 'PAYMENT.CAPTURE.COMPLETED') {
             return null;
