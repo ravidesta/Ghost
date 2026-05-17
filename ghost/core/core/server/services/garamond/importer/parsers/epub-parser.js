@@ -1,17 +1,35 @@
-// # EPUB parser (stub)
+// # EPUB parser
 //
-// EPUBs are zip archives containing XHTML spine items, an OPF manifest, and
-// (usually) a navigation document. A real implementation will:
-//   1. unzip the package (yauzl/jszip)
-//   2. read `META-INF/container.xml` → locate the .opf
-//   3. parse the OPF spine to get reading order
-//   4. parse each XHTML spine item into a chapter, using <title> or the
-//      first heading as the chapter title
-//   5. strip embedded scripts/styles, keep semantic HTML for the editor
-//
-// Stubbed so the importer registers .epub and surfaces a clear error
-// per-file rather than crashing the batch.
+// Walks the EPUB spine in reading order and joins each spine item's HTML.
+// Then the shared splitter cuts the result into chapters on h1/h2/h3. The
+// spine order is the canonical "what to read next" sequence per the EPUB
+// spec, which works for the vast majority of trade ebooks; broken EPUBs
+// get reported as per-file errors by the importer.
 const BookParser = require('../parser-base');
+const {splitHtmlByHeadings, deriveTitle, stripTags} = require('../chapter-splitter');
+
+// Map epub2's spine-item callback API (`getChapter(id, cb)`) onto a Promise.
+function getChapter(epub, id) {
+    return new Promise((resolve, reject) => {
+        epub.getChapter(id, (err, text) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(text);
+            }
+        });
+    });
+}
+
+function openEpub(filePath) {
+    const EPub = require('epub2').EPub;
+    return new Promise((resolve, reject) => {
+        const epub = new EPub(filePath);
+        epub.on('end', () => resolve(epub));
+        epub.on('error', reject);
+        epub.parse();
+    });
+}
 
 class EpubParser extends BookParser {
     constructor() {
@@ -19,8 +37,29 @@ class EpubParser extends BookParser {
         this.format = 'epub';
     }
 
-    async parse(_filePath) {
-        throw new Error('EPUB parsing is not implemented yet');
+    async parse(filePath) {
+        const epub = await openEpub(filePath);
+
+        const parts = [];
+        for (const item of epub.flow) {
+            try {
+                const html = await getChapter(epub, item.id);
+                parts.push(html);
+            } catch (err) {
+                // Skip unreadable spine items rather than killing the whole book
+                // eslint-disable-next-line no-console
+                console.warn(`epub: skipping spine item ${item.id}: ${err.message}`);
+            }
+        }
+
+        const combined = parts.join('\n');
+        const chapters = splitHtmlByHeadings(combined);
+
+        const title = (epub.metadata && epub.metadata.title)
+            || deriveTitle(chapters, filePath)
+            || stripTags((chapters[0] && chapters[0].title) || '');
+
+        return {title, chapters};
     }
 }
 

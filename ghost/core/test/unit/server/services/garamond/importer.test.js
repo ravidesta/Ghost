@@ -114,25 +114,8 @@ describe('Garamond: importer', function () {
         });
     });
 
-    describe('parseBookFile (unimplemented formats)', function () {
-        it('throws a clear error for EPUB', async function () {
-            const file = path.join(tmpDir, 'novel.epub');
-            await fs.writeFile(file, 'PKfake');
-            await assert.rejects(() => parseBookFile(file), /EPUB parsing is not implemented/);
-        });
-
-        it('throws a clear error for PDF', async function () {
-            const file = path.join(tmpDir, 'novel.pdf');
-            await fs.writeFile(file, '%PDF-1.4 fake');
-            await assert.rejects(() => parseBookFile(file), /PDF parsing is not implemented/);
-        });
-
-        it('throws a clear error for DOCX', async function () {
-            const file = path.join(tmpDir, 'novel.docx');
-            await fs.writeFile(file, 'PKfake');
-            await assert.rejects(() => parseBookFile(file), /DOCX parsing is not implemented/);
-        });
-
+    describe('parseBookFile (binary formats)', function () {
+        // Real EPUB/PDF/DOCX/RTF parsing is exercised in parser-specific suites.
         it('throws a clear error for Pages', async function () {
             const file = path.join(tmpDir, 'novel.pages');
             await fs.writeFile(file, 'PKfake');
@@ -143,7 +126,8 @@ describe('Garamond: importer', function () {
     describe('importFolder', function () {
         it('returns one record per supported file and collects per-file errors', async function () {
             await fs.writeFile(path.join(tmpDir, 'good.txt'), '# Title\nContents.');
-            await fs.writeFile(path.join(tmpDir, 'broken.epub'), 'PKfake');
+            // A .pages file is the only stub left — guaranteed per-file failure.
+            await fs.writeFile(path.join(tmpDir, 'broken.pages'), 'PKfake');
             await fs.writeFile(path.join(tmpDir, 'unrelated.png'), 'ignored');
 
             const {books, errors} = await importFolder(tmpDir);
@@ -153,8 +137,8 @@ describe('Garamond: importer', function () {
             assert.equal(books[0].title, 'Title');
 
             assert.equal(errors.length, 1);
-            assert.equal(path.basename(errors[0].file), 'broken.epub');
-            assert.match(errors[0].error, /EPUB parsing is not implemented/);
+            assert.equal(path.basename(errors[0].file), 'broken.pages');
+            assert.match(errors[0].error, /Pages parsing is not implemented/);
         });
 
         it('rejects when given a path that is not a directory', async function () {

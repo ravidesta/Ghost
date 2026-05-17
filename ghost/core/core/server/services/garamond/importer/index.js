@@ -16,6 +16,7 @@ const TextParser = require('./parsers/text-parser');
 const EpubParser = require('./parsers/epub-parser');
 const PdfParser = require('./parsers/pdf-parser');
 const DocxParser = require('./parsers/docx-parser');
+const RtfParser = require('./parsers/rtf-parser');
 const PagesParser = require('./parsers/pages-parser');
 
 const PARSERS = {
@@ -25,6 +26,7 @@ const PARSERS = {
     '.epub': new EpubParser(),
     '.pdf': new PdfParser(),
     '.docx': new DocxParser(),
+    '.rtf': new RtfParser(),
     '.pages': new PagesParser()
 };
 
