@@ -4,7 +4,9 @@
 // series-aware catalog tooling, storefront). For now this only exposes the
 // font pairing presets — the rest lands as it's built.
 const fontPairings = require('./font-pairings');
+const importer = require('./importer');
 
 module.exports = {
-    fontPairings
+    fontPairings,
+    importer
 };
