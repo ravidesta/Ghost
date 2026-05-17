@@ -7,10 +7,12 @@ const fontPairings = require('./font-pairings');
 const importer = require('./importer');
 const storefront = require('./storefront');
 const packager = require('./packager');
+const payments = require('./payments');
 
 module.exports = {
     fontPairings,
     importer,
     storefront,
-    packager
+    packager,
+    payments
 };

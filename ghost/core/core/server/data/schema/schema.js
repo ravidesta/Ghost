@@ -1311,6 +1311,8 @@ module.exports = {
         id: {type: 'string', maxlength: 24, nullable: false, primary: true},
         book_id: {type: 'string', maxlength: 24, nullable: false, references: 'books.id', cascadeDelete: true},
         member_id: {type: 'string', maxlength: 24, nullable: false, references: 'members.id', cascadeDelete: true},
+        payment_provider: {type: 'string', maxlength: 50, nullable: false, defaultTo: 'stripe'},
+        provider_payment_id: {type: 'string', maxlength: 255, nullable: true},
         stripe_payment_intent_id: {type: 'string', maxlength: 255, nullable: true},
         amount_cents: {type: 'integer', nullable: false, unsigned: true, defaultTo: 0},
         currency: {type: 'string', maxlength: 50, nullable: false, defaultTo: 'usd'},

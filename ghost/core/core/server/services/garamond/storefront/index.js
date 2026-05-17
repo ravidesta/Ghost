@@ -56,14 +56,16 @@ async function hasAccess({memberId, bookId}) {
 
 /**
  * Record that a member purchased a book. Idempotent on
- * (member_id, book_id, stripe_payment_intent_id).
+ * (payment_provider, provider_payment_id).
  *
  * @param {Object} args
  * @param {string} args.memberId
  * @param {string} args.bookId
  * @param {number} args.amountCents
  * @param {string} [args.currency]
- * @param {string} [args.stripePaymentIntentId]
+ * @param {string} [args.paymentProvider]  - 'stripe' | 'paypal' | ...
+ * @param {string} [args.providerPaymentId]
+ * @param {string} [args.stripePaymentIntentId]  - back-compat alias
  * @param {Date}   [args.purchasedAt]
  */
 async function recordPurchase({
@@ -71,18 +73,25 @@ async function recordPurchase({
     bookId,
     amountCents,
     currency = 'usd',
-    stripePaymentIntentId = null,
+    paymentProvider,
+    providerPaymentId,
+    stripePaymentIntentId,
     purchasedAt = new Date()
 }) {
     if (!memberId || !bookId) {
         throw new errors.BadRequestError({message: 'memberId and bookId are required'});
     }
 
+    // Back-compat: callers that still pass stripePaymentIntentId behave the
+    // same way they always did — we just normalise into the new columns.
+    const effectiveProvider = paymentProvider || (stripePaymentIntentId ? 'stripe' : 'stripe');
+    const effectivePaymentId = providerPaymentId ?? stripePaymentIntentId ?? null;
+
     const {BookPurchase} = models();
 
-    if (stripePaymentIntentId) {
+    if (effectivePaymentId) {
         const existing = await BookPurchase.findOne(
-            {stripe_payment_intent_id: stripePaymentIntentId},
+            {payment_provider: effectiveProvider, provider_payment_id: effectivePaymentId},
             {require: false}
         );
         if (existing) {
@@ -95,24 +104,35 @@ async function recordPurchase({
         member_id: memberId,
         amount_cents: amountCents,
         currency,
-        stripe_payment_intent_id: stripePaymentIntentId,
+        payment_provider: effectiveProvider,
+        provider_payment_id: effectivePaymentId,
+        // also write the legacy column so downstream Stripe-aware code keeps
+        // working until it's migrated to read provider_payment_id
+        stripe_payment_intent_id: effectiveProvider === 'stripe' ? effectivePaymentId : null,
         status: 'paid',
         purchased_at: purchasedAt
     });
 }
 
 /**
- * Mark a purchase as refunded by Stripe payment intent id.
+ * Mark a purchase as refunded by provider + payment id.
  *
- * @param {string} stripePaymentIntentId
+ * @param {Object|string} args - {paymentProvider, providerPaymentId} or, for
+ *                                back-compat, a bare Stripe payment intent id.
  * @returns {Promise<Object|null>} the updated purchase, or null if not found
  */
-async function refundPurchase(stripePaymentIntentId) {
+async function refundPurchase(args) {
     const {BookPurchase} = models();
-    const purchase = await BookPurchase.findOne(
-        {stripe_payment_intent_id: stripePaymentIntentId},
-        {require: false}
-    );
+    let where;
+    if (typeof args === 'string') {
+        where = {payment_provider: 'stripe', provider_payment_id: args};
+    } else {
+        where = {
+            payment_provider: args.paymentProvider,
+            provider_payment_id: args.providerPaymentId
+        };
+    }
+    const purchase = await BookPurchase.findOne(where, {require: false});
     if (!purchase) {
         return null;
     }
