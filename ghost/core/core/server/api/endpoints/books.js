@@ -1,7 +1,7 @@
 const errors = require('@tryghost/errors');
 const tpl = require('@tryghost/tpl');
 const models = require('../../models');
-const {storefront, packager} = require('../../services/garamond');
+const {storefront, packager, ai} = require('../../services/garamond');
 
 const messages = {
     bookNotFound: 'Book not found.',
@@ -170,6 +170,60 @@ const controller = {
             const memberId = frame.options.context?.member?.id;
             const access = await storefront.hasAccess({memberId, bookId: frame.options.id});
             return {access};
+        }
+    },
+
+    /**
+     * Generate a cover image via the configured image AI provider.
+     * Body: { style?: string, extra?: string, size?: string, model?: string }
+     */
+    generateCover: {
+        statusCode: 201,
+        headers: {cacheInvalidate: false},
+        options: ['id'],
+        validation: {options: {id: {required: true}}},
+        permissions: PUBLIC,
+        async query(frame) {
+            const book = await models.Book.findOne({id: frame.options.id}, {require: false});
+            if (!book) {
+                throw new errors.NotFoundError({message: 'Book not found.'});
+            }
+            const opts = (frame.data && frame.data.books && frame.data.books[0]) || {};
+            const result = await ai.coverImage({
+                book: book.toJSON(),
+                style: opts.style,
+                extra: opts.extra,
+                size: opts.size,
+                model: opts.model
+            });
+            return {cover: result};
+        }
+    },
+
+    /**
+     * Run an AI copyedit pass over a chapter and return structured
+     * suggestions. Body: { chapterId: string, model?: string }
+     */
+    copyeditChapter: {
+        headers: {cacheInvalidate: false},
+        options: ['id'],
+        validation: {options: {id: {required: true}}},
+        permissions: PUBLIC,
+        async query(frame) {
+            const payload = (frame.data && frame.data.books && frame.data.books[0]) || {};
+            const chapterId = payload.chapterId;
+            if (!chapterId) {
+                throw new errors.BadRequestError({message: 'chapterId is required.'});
+            }
+            const chapter = await models.BookChapter.findOne({id: chapterId}, {require: false});
+            if (!chapter || chapter.get('book_id') !== frame.options.id) {
+                throw new errors.NotFoundError({message: 'Chapter not found in this book.'});
+            }
+            const result = await ai.copyedit({
+                text: chapter.get('content') || '',
+                model: payload.model
+            });
+            return {copyedit: result};
         }
     }
 };

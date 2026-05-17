@@ -1,7 +1,8 @@
 // # AI Provider base class
 //
-// All AI providers (Azure AI, OpenAI, Anthropic, etc.) extend this class so
-// Ghost can swap providers without callers caring. Keep this surface small —
+// All AI providers (OpenAI, Anthropic, Azure, …) extend this class so the
+// task router can pick whichever one is best for a job without callers
+// caring which vendor or model ran the inference. Keep this surface small —
 // providers pick the right underlying model per capability.
 
 class AIProviderBase {
@@ -11,7 +12,7 @@ class AIProviderBase {
     }
 
     /**
-     * Whether this provider is configured and ready to receive requests.
+     * Whether this provider has the credentials it needs to take requests.
      * @returns {boolean}
      */
     isAvailable() {
@@ -19,28 +20,41 @@ class AIProviderBase {
     }
 
     /**
-     * Generate text (copyedit, summary, marketing copy, chapter outline, etc.).
-     * @param {Object} _params
-     * @param {string} _params.prompt
-     * @param {string} [_params.system]
-     * @param {number} [_params.maxTokens]
-     * @param {string} [_params.model]
-     * @returns {Promise<{text: string}>}
+     * Generate text (copyedit, summary, marketing copy, chapter outline, …).
+     *
+     * @param {Object} args
+     * @param {string} args.prompt
+     * @param {string} [args.system]
+     * @param {number} [args.maxTokens=1024]
+     * @param {string} [args.model]
+     * @returns {Promise<{text: string, model: string, usage?: Object}>}
      */
-    async generateText(_params) {
+    async generateText(_args) {
         throw new Error(`${this.name}: generateText not implemented`);
     }
 
     /**
      * Generate an image (covers, watercolor accents, drop-cap flourishes).
-     * @param {Object} _params
-     * @param {string} _params.prompt
-     * @param {string} [_params.size]
-     * @param {string} [_params.style]
-     * @returns {Promise<{url: string}|{b64: string}>}
+     *
+     * @param {Object} args
+     * @param {string} args.prompt
+     * @param {string} [args.size='1024x1024']
+     * @param {string} [args.style]
+     * @param {string} [args.model]
+     * @returns {Promise<{url?: string, b64?: string, model: string}>}
      */
-    async generateImage(_params) {
+    async generateImage(_args) {
         throw new Error(`${this.name}: generateImage not implemented`);
+    }
+
+    /**
+     * Whether this provider supports image generation. Most LLM providers
+     * only do text; the router checks this when picking a provider for an
+     * image task.
+     * @returns {boolean}
+     */
+    supportsImages() {
+        return false;
     }
 }
 

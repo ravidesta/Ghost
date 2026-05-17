@@ -9,6 +9,7 @@ const storefront = require('./storefront');
 const packager = require('./packager');
 const payments = require('./payments');
 const royalties = require('./royalties');
+const ai = require('./ai');
 
 module.exports = {
     fontPairings,
@@ -16,5 +17,6 @@ module.exports = {
     storefront,
     packager,
     payments,
-    royalties
+    royalties,
+    ai
 };

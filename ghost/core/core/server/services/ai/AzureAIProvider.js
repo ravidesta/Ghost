@@ -24,6 +24,10 @@ class AzureAIProvider extends AIProviderBase {
         return Boolean(this.endpoint && this.apiKey && this.deployments.text);
     }
 
+    supportsImages() {
+        return Boolean(this.deployments && this.deployments.image);
+    }
+
     _getClient() {
         if (this._client) {
             return this._client;

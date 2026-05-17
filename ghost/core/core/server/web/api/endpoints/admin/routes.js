@@ -385,6 +385,8 @@ module.exports = function apiRoutes() {
     router.post('/books/import', mw.authAdminApi, http(api.books.import));
     router.get('/books/:id/download', mw.authAdminApi, http(api.books.download));
     router.get('/books/:id/access', mw.authAdminApi, http(api.books.access));
+    router.post('/books/:id/cover', mw.authAdminApi, http(api.books.generateCover));
+    router.post('/books/:id/copyedit', mw.authAdminApi, http(api.books.copyeditChapter));
 
     // ## Garamond — series
     router.get('/series', mw.authAdminApi, http(api.series.browse));
