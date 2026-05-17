@@ -7,6 +7,7 @@
 // The model layer is loaded lazily — services run before models.init() in
 // some boot orderings, so we resolve them on first use.
 const errors = require('@tryghost/errors');
+const royalties = require('../royalties');
 
 let _models;
 function models() {
@@ -99,7 +100,7 @@ async function recordPurchase({
         }
     }
 
-    return BookPurchase.add({
+    const purchase = await BookPurchase.add({
         book_id: bookId,
         member_id: memberId,
         amount_cents: amountCents,
@@ -112,6 +113,30 @@ async function recordPurchase({
         status: 'paid',
         purchased_at: purchasedAt
     });
+
+    // Write the matching royalty ledger entry so the author's pending balance
+    // is updated automatically. Best-effort: a ledger failure should not block
+    // the purchase being recorded, so we surface and continue.
+    try {
+        const {Book} = models();
+        const book = await Book.findOne({id: bookId}, {require: false});
+        const authorId = book && book.get('author_id');
+        if (authorId) {
+            await royalties.recordSale({
+                bookId,
+                authorId,
+                grossCents: amountCents,
+                currency,
+                bookPurchaseId: purchase.id,
+                recordedAt: purchasedAt
+            });
+        }
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('garamond.storefront: royalty ledger write failed', err);
+    }
+
+    return purchase;
 }
 
 /**

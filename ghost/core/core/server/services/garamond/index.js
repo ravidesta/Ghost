@@ -8,11 +8,13 @@ const importer = require('./importer');
 const storefront = require('./storefront');
 const packager = require('./packager');
 const payments = require('./payments');
+const royalties = require('./royalties');
 
 module.exports = {
     fontPairings,
     importer,
     storefront,
     packager,
-    payments
+    payments,
+    royalties
 };

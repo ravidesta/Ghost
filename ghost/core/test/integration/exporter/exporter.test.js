@@ -93,6 +93,7 @@ describe('Exporter', function () {
                 'redirects',
                 'roles',
                 'roles_users',
+                'royalty_ledger',
                 'series',
                 'sessions',
                 'settings',
