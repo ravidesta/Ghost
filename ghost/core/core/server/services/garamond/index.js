@@ -13,6 +13,7 @@ const ai = require('./ai');
 const sites = require('./sites');
 const payouts = require('./payouts');
 const concierge = require('./concierge');
+const courses = require('./courses');
 
 module.exports = {
     fontPairings,
@@ -24,5 +25,6 @@ module.exports = {
     ai,
     sites,
     payouts,
-    concierge
+    concierge,
+    courses
 };

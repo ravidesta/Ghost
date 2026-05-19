@@ -9,10 +9,12 @@ const router = require('./router');
 const copyedit = require('./tasks/copyedit');
 const coverImage = require('./tasks/cover-image');
 const siteCopy = require('./tasks/site-copy');
+const coursifyBook = require('./tasks/coursify-book');
 
 module.exports = {
     router,
     copyedit,
     coverImage,
-    siteCopy
+    siteCopy,
+    coursifyBook
 };

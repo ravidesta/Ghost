@@ -29,6 +29,7 @@ describe('Exporter', function () {
                 'automated_email_recipients',
                 'benefits',
                 'book_chapters',
+                'book_courses',
                 'book_purchases',
                 'books',
                 'brute',

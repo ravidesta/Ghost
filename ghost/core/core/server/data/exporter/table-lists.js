@@ -91,6 +91,7 @@ const TABLES_ALLOWLIST = [
     'books',
     'book_chapters',
     'book_purchases',
+    'book_courses',
     'royalty_ledger',
     'author_memory',
     'concierge_messages'

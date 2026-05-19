@@ -414,6 +414,12 @@ module.exports = function apiRoutes() {
     router.get('/concierge/memory', mw.authAdminApi, http(api.garamondConcierge.memory));
     router.put('/concierge/memory', mw.authAdminApi, http(api.garamondConcierge.setMemory));
 
+    // ## Garamond — courses from books
+    router.get('/books/:id/course', mw.authAdminApi, http(api.bookCourses.read));
+    router.post('/books/:id/course/coursify', mw.authAdminApi, http(api.bookCourses.coursify));
+    router.put('/books/:id/course', mw.authAdminApi, http(api.bookCourses.edit));
+    router.post('/books/:id/course/publish', mw.authAdminApi, http(api.bookCourses.publish));
+
     // ## Custom theme settings
     router.get('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.browse));
     router.put('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.edit));

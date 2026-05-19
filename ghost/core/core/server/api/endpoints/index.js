@@ -209,6 +209,10 @@ module.exports = {
         return apiFramework.pipeline(require('./garamond-concierge'), localUtils);
     },
 
+    get bookCourses() {
+        return apiFramework.pipeline(require('./book-courses'), localUtils);
+    },
+
     get stats() {
         return apiFramework.pipeline(require('./stats'), localUtils);
     },
