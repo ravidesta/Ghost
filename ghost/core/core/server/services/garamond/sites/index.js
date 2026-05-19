@@ -29,15 +29,18 @@ function _siteUrl(req) {
     return req || '';
 }
 
+const ACTIVE_SUBSCRIPTION_STATUSES = new Set(['active', 'past_due']);
+
 /**
  * Render and publish a complete author site (home + book pages + series pages).
  *
  * @param {Object} args
  * @param {string} args.authorId
  * @param {string} [args.fontPairingId='the-sorbonne']
+ * @param {boolean} [args.skipSubscriptionCheck=false]  admin override for testing
  * @returns {Promise<{homepageUrl: string, paths: string[], counts: Object}>}
  */
-async function publishAuthor({authorId, fontPairingId = 'the-sorbonne'}) {
+async function publishAuthor({authorId, fontPairingId = 'the-sorbonne', skipSubscriptionCheck = false}) {
     if (!authorId) {
         throw new Error('publishAuthor: authorId is required');
     }
@@ -47,6 +50,15 @@ async function publishAuthor({authorId, fontPairingId = 'the-sorbonne'}) {
     const userModel = await User.findOne({id: authorId}, {require: false});
     if (!userModel) {
         throw new Error(`publishAuthor: author ${authorId} not found`);
+    }
+
+    if (!skipSubscriptionCheck) {
+        const status = userModel.get('garamond_site_status') || 'inactive';
+        if (!ACTIVE_SUBSCRIPTION_STATUSES.has(status)) {
+            const err = new Error(`publishAuthor: author site subscription is ${status} — required: active`);
+            err.code = 'SUBSCRIPTION_REQUIRED';
+            throw err;
+        }
     }
     const author = {
         id: userModel.get('id'),

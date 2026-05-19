@@ -115,18 +115,20 @@ describe('Garamond: importer', function () {
     });
 
     describe('parseBookFile (binary formats)', function () {
-        // Real EPUB/PDF/DOCX/RTF parsing is exercised in parser-specific suites.
-        it('throws a clear error for Pages', async function () {
+        // Real EPUB/PDF/DOCX/RTF/Pages parsing is exercised in parser-specific
+        // suites; we just verify here that bad inputs surface as per-file
+        // errors rather than crashing the import.
+        it('surfaces an opening error when a .pages file is not a real bundle', async function () {
             const file = path.join(tmpDir, 'novel.pages');
             await fs.writeFile(file, 'PKfake');
-            await assert.rejects(() => parseBookFile(file), /Pages parsing is not implemented/);
+            await assert.rejects(() => parseBookFile(file), /Pages bundle|adm-zip|Invalid/i);
         });
     });
 
     describe('importFolder', function () {
         it('returns one record per supported file and collects per-file errors', async function () {
             await fs.writeFile(path.join(tmpDir, 'good.txt'), '# Title\nContents.');
-            // A .pages file is the only stub left — guaranteed per-file failure.
+            // A bad .pages file (not a real zip) reliably fails at the zip layer.
             await fs.writeFile(path.join(tmpDir, 'broken.pages'), 'PKfake');
             await fs.writeFile(path.join(tmpDir, 'unrelated.png'), 'ignored');
 
@@ -138,7 +140,7 @@ describe('Garamond: importer', function () {
 
             assert.equal(errors.length, 1);
             assert.equal(path.basename(errors[0].file), 'broken.pages');
-            assert.match(errors[0].error, /Pages parsing is not implemented/);
+            assert.match(errors[0].error, /Pages bundle|adm-zip|Invalid/i);
         });
 
         it('rejects when given a path that is not a directory', async function () {

@@ -610,6 +610,11 @@
                     "object_type": "snippet"
                 },
                 {
+                    "name": "Manage Garamond",
+                    "action_type": "manage",
+                    "object_type": "garamond"
+                },
+                {
                     "name": "Browse offers",
                     "action_type": "browse",
                     "object_type": "offer"
@@ -930,6 +935,7 @@
                     "email": "all",
                     "member_signin_url": "read",
                     "snippet": "all",
+                    "garamond": ["manage"],
                     "custom_theme_setting": "all",
                     "offer": "all",
                     "authentication": "resetAllPasswords",

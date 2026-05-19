@@ -186,6 +186,7 @@ module.exports = {
         stripe_connect_account_id: {type: 'string', maxlength: 100, nullable: true},
         paypal_payer_email: {type: 'string', maxlength: 191, nullable: true},
         default_payout_provider: {type: 'string', maxlength: 50, nullable: true},
+        garamond_site_status: {type: 'string', maxlength: 50, nullable: false, defaultTo: 'inactive', validations: {isIn: [['inactive', 'active', 'past_due', 'canceled']]}},
         created_at: {type: 'dateTime', nullable: false},
         updated_at: {type: 'dateTime', nullable: true}
     },
