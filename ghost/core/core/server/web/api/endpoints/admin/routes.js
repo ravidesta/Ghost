@@ -420,6 +420,18 @@ module.exports = function apiRoutes() {
     router.put('/books/:id/course', mw.authAdminApi, http(api.bookCourses.edit));
     router.post('/books/:id/course/publish', mw.authAdminApi, http(api.bookCourses.publish));
 
+    // ## Garamond — services marketplace (paid editing / illustration)
+    router.get('/marketplace/offers', mw.authAdminApi, http(api.marketplace.browse));
+    router.get('/marketplace/offers/:id', mw.authAdminApi, http(api.marketplace.read));
+    router.post('/marketplace/offers', mw.authAdminApi, http(api.marketplace.add));
+    router.post('/marketplace/offers/:id/fund', mw.authAdminApi, http(api.marketplace.fund));
+    router.post('/marketplace/offers/:id/claim', mw.authAdminApi, http(api.marketplace.claim));
+    router.post('/marketplace/offers/:id/start', mw.authAdminApi, http(api.marketplace.start));
+    router.post('/marketplace/offers/:id/deliver', mw.authAdminApi, http(api.marketplace.deliver));
+    router.post('/marketplace/offers/:id/accept', mw.authAdminApi, http(api.marketplace.accept));
+    router.post('/marketplace/offers/:id/dispute', mw.authAdminApi, http(api.marketplace.dispute));
+    router.post('/marketplace/offers/:id/cancel', mw.authAdminApi, http(api.marketplace.cancel));
+
     // ## Custom theme settings
     router.get('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.browse));
     router.put('/custom_theme_settings', mw.authAdminApi, http(api.customThemeSettings.edit));

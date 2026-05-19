@@ -98,6 +98,7 @@ describe('Exporter', function () {
                 'roles_users',
                 'royalty_ledger',
                 'series',
+                'service_offers',
                 'sessions',
                 'settings',
                 'snippets',

@@ -14,6 +14,7 @@ const sites = require('./sites');
 const payouts = require('./payouts');
 const concierge = require('./concierge');
 const courses = require('./courses');
+const marketplace = require('./marketplace');
 
 module.exports = {
     fontPairings,
@@ -26,5 +27,6 @@ module.exports = {
     sites,
     payouts,
     concierge,
-    courses
+    courses,
+    marketplace
 };
