@@ -1,7 +1,8 @@
 > **THE CHARTER GOVERNS.** Read `~/Bastion/THE-CHARTER.md` in full before the
-> first action of this session — the five ground laws (resolve never report ·
+> first action of this session — the six ground laws (resolve never report ·
 > research primary sources · always exceed · open with what is working ·
-> always five things that could be great), the
+> always five things that could be great · never spend his attention on
+> anything a machine could find out), the
 > product standard, the board, and the architecture doctrine. It is also the
 > head of `~/Bastion/STANDING_ORDERS.md` = `~/CLAUDE.md`. When a default and a
 > law disagree, the law wins. Anything in this file that conflicts loses.
